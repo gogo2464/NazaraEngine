@@ -17,7 +17,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-20.04]
-        arch: [x64]
+        arch: [x86_64]
         mode: [debug, releasedbg]
 
     runs-on: ${{ matrix.os }}
@@ -66,7 +66,7 @@ jobs:
 
     # Build the engine
     - name: Build Nazara
-      run: xmake
+      run: xmake -v
 
     # Install the result files
     - name: Install Nazara
