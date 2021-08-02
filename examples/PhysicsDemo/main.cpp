@@ -77,7 +77,7 @@ int main()
 
 	auto customSettings = Nz::BasicMaterial::GetSettings()->GetBuilderData();
 	customSettings.shaders.clear();
-	customSettings.shaders.emplace_back(std::make_shared<Nz::UberShader>(Nz::ShaderStageType::Vertex, Nz::ShaderLang::Parse(resourceDir / "depth_vert.nzsl")));
+	customSettings.shaders.emplace_back(std::make_shared<Nz::UberShader>(Nz::ShaderStageType::Fragment | Nz::ShaderStageType::Vertex, Nz::ShaderLang::Parse(resourceDir / "depth_pass.nzsl")));
 
 	auto depthSettings = std::make_shared<Nz::MaterialSettings>(std::move(customSettings));
 
@@ -101,6 +101,9 @@ int main()
 	basicMat.SetAlphaMap(Nz::Texture::LoadFromFile(resourceDir / "alphatile.png", texParams));
 	basicMat.SetDiffuseMap(Nz::Texture::LoadFromFile(resourceDir / "Spaceship/Texture/diffuse.png", texParams));
 	basicMat.SetDiffuseSampler(samplerInfo);
+
+	Nz::BasicMaterial basicMatDepth(*depthPass);
+	basicMatDepth.SetAlphaMap(Nz::Texture::LoadFromFile(resourceDir / "alphatile.png", texParams));
 
 	std::shared_ptr<Nz::Model> model = std::make_shared<Nz::Model>(std::move(gfxMesh));
 	for (std::size_t i = 0; i < model->GetSubMeshCount(); ++i)
@@ -224,7 +227,10 @@ int main()
 
 				case Nz::WindowEventType::KeyPressed:
 					if (event.key.virtualKey == Nz::Keyboard::VKey::A)
+					{
 						basicMat.EnableAlphaTest(!basicMat.IsAlphaTestEnabled());
+						basicMatDepth.EnableAlphaTest(!basicMatDepth.IsAlphaTestEnabled());
+					}
 					else if (event.key.virtualKey == Nz::Keyboard::VKey::B)
 					{
 						showColliders = !showColliders;
